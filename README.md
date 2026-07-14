@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Strain Tracker
 
-## Getting Started
+A personal cannabis strain tracking app built with Next.js (App Router), Tailwind CSS, and Neon Postgres. Deploy to Vercel for free.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Add strains with name, type, effects, price, image URL, and 1–5 star rating
+- Edit and delete existing entries
+- Search and filter by type
+- Dashboard stats: total count, average price, average rating, top-rated strain
+- Export all strains to JSON or CSV
+
+## Setup
+
+### 1. Create a Neon database
+
+Sign up at [neon.tech](https://neon.tech) (free tier) and create a new project. Copy the connection string — it looks like:
+
+```
+postgresql://user:password@ep-xxx-pooler.region.aws.neon.tech/dbname?sslmode=require
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Set the environment variable
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create a `.env.local` file for local development:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+DATABASE_URL="postgresql://user:password@ep-xxx-pooler.region.aws.neon.tech/dbname?sslmode=require"
+```
 
-## Learn More
+For Vercel deployment, add the same variable in **Project Settings → Environment Variables** as `DATABASE_URL`.
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Install and run
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The schema auto-creates on first DB access — no manual migration needed.
 
-## Deploy on Vercel
+## Deploy to Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Push this repo to GitHub.
+2. Import it in Vercel.
+3. Add `DATABASE_URL` to the environment variables (paste your Neon connection string).
+4. Deploy. Vercel will auto-detect Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Alternatively, use the Vercel CLI:
+
+```bash
+npm i -g vercel
+vercel
+vercel env add DATABASE_URL  # paste connection string when prompted
+vercel --prod
+```
