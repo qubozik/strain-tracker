@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import ImageInput from './ImageInput';
+import Lightbox from './Lightbox';
 
 interface Strain {
   id: number;
@@ -77,6 +78,7 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
   const [makesHigh, setMakesHigh] = useState(strain.makes_high);
   const [consumption, setConsumption] = useState(strain.consumption ?? 'Flower');
   const [vendor, setVendor] = useState(strain.vendor ?? '');
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   async function handleSave() {
     setSubmitting(true);
@@ -169,13 +171,20 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
       {strain.images && strain.images.length > 0 && (
         <div className={`grid gap-0.5 ${strain.images.length === 1 ? 'grid-cols-1' : 'grid-cols-3'}`}>
           {strain.images.slice(0, 3).map((src, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <button
               key={i}
-              src={src}
-              alt={`${strain.name} photo ${i + 1}`}
-              className={`w-full object-cover ${strain.images.length === 1 ? 'h-40' : 'h-24'}`}
-            />
+              type="button"
+              onClick={() => setLightboxIndex(i)}
+              className="block cursor-zoom-in"
+              aria-label={`Expand photo ${i + 1}`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={src}
+                alt={`${strain.name} photo ${i + 1}`}
+                className={`w-full object-cover ${strain.images.length === 1 ? 'h-40' : 'h-24'}`}
+              />
+            </button>
           ))}
         </div>
       )}
@@ -225,6 +234,13 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
           <button onClick={handleDelete} className="text-xs px-3 py-1 rounded-lg bg-earth-red/15 text-earth-red hover:bg-earth-red/25 border border-earth-red/40">Delete</button>
         </div>
       </div>
+      {lightboxIndex !== null && (
+        <Lightbox
+          images={strain.images}
+          index={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
+      )}
     </div>
   );
 }

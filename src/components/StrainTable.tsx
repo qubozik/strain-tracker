@@ -1,6 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import type { Strain } from '@/lib/db';
+import Lightbox from './Lightbox';
 
 interface StrainTableProps {
   strains: Strain[];
@@ -21,6 +23,7 @@ function Stars({ rating }: { rating: number }) {
 }
 
 export default function StrainTable({ strains, onEdit, onDelete }: StrainTableProps) {
+  const [lightbox, setLightbox] = useState<string[] | null>(null);
   return (
     <div className="overflow-x-auto rounded-xl border border-line">
       <table className="w-full text-sm">
@@ -44,8 +47,10 @@ export default function StrainTable({ strains, onEdit, onDelete }: StrainTablePr
             <tr key={s.id} className="border-t border-line hover:bg-surface2/50">
               <td className="px-3 py-2">
                 {s.images && s.images.length > 0 ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={s.images[0]} alt={s.name} className="h-10 w-10 object-cover rounded border border-line" />
+                  <button type="button" onClick={() => setLightbox(s.images)} className="block cursor-zoom-in" aria-label={`Expand ${s.name} photo`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={s.images[0]} alt={s.name} className="h-10 w-10 object-cover rounded border border-line" />
+                  </button>
                 ) : (
                   <div className="h-10 w-10 rounded border border-line bg-surface2" />
                 )}
@@ -83,6 +88,9 @@ export default function StrainTable({ strains, onEdit, onDelete }: StrainTablePr
           ))}
         </tbody>
       </table>
+      {lightbox && (
+        <Lightbox images={lightbox} index={0} onClose={() => setLightbox(null)} />
+      )}
     </div>
   );
 }
