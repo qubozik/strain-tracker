@@ -43,9 +43,9 @@ export default async function Home() {
       )}
 
       {!dbError && strains.length === 0 && stats.total === 0 && (
-        <div className="rounded-xl border border-yellow-800/50 bg-yellow-900/20 text-yellow-200 p-4 mb-6">
+        <div className="rounded-xl border border-neutral-700 bg-neutral-900 text-neutral-300 p-4 mb-6">
           <p className="text-sm">
-            <strong>Database not connected.</strong> Set the <code>DATABASE_URL</code> environment variable in Vercel with your Neon Postgres connection string.
+            <strong>No strains yet.</strong> Add your first strain using the form below to get started.
           </p>
         </div>
       )}
