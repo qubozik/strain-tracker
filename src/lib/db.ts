@@ -24,6 +24,7 @@ export interface Strain {
   price: number;
   rating: number;
   image_url: string | null;
+  images: string[];
   cbd_percent: number | null;
   makes_high: boolean;
   consumption: string;
@@ -53,16 +54,31 @@ export async function ensureSchema() {
   await sql`ALTER TABLE strains ADD COLUMN IF NOT EXISTS makes_high BOOLEAN NOT NULL DEFAULT TRUE`;
   await sql`ALTER TABLE strains ADD COLUMN IF NOT EXISTS consumption TEXT NOT NULL DEFAULT 'Flower'`;
   await sql`ALTER TABLE strains ADD COLUMN IF NOT EXISTS vendor TEXT NOT NULL DEFAULT ''`;
+  await sql`ALTER TABLE strains ADD COLUMN IF NOT EXISTS images JSONB NOT NULL DEFAULT '[]'::jsonb`;
+}
+
+// Normalize a DB row: prefer the images array, fall back to legacy image_url.
+function mapRow(r: Record<string, unknown>): Strain {
+  const rawImages = r.images;
+  let images: string[] = Array.isArray(rawImages)
+    ? (rawImages as string[])
+    : typeof rawImages === 'string'
+    ? (JSON.parse(rawImages) as string[])
+    : [];
+  if (images.length === 0 && r.image_url) {
+    images = [r.image_url as string];
+  }
+  return { ...(r as unknown as Strain), images };
 }
 
 export async function getStrains(): Promise<Strain[]> {
   await ensureSchema();
   const rows = await sql`
-    SELECT id, name, type, effects, price, rating, image_url, cbd_percent, makes_high, consumption, vendor, created_at
+    SELECT id, name, type, effects, price, rating, image_url, images, cbd_percent, makes_high, consumption, vendor, created_at
     FROM strains
     ORDER BY created_at DESC
   `;
-  return rows as Strain[];
+  return (rows as Record<string, unknown>[]).map(mapRow);
 }
 
 export async function createStrain(data: {
@@ -72,18 +88,21 @@ export async function createStrain(data: {
   price: number;
   rating: number;
   image_url?: string;
+  images?: string[];
   cbd_percent?: number | null;
   makes_high?: boolean;
   consumption?: string;
   vendor?: string;
 }): Promise<Strain> {
   await ensureSchema();
+  const images = (data.images ?? []).filter(Boolean).slice(0, 3);
+  const primary = images[0] ?? data.image_url ?? null;
   const rows = await sql`
-    INSERT INTO strains (name, type, effects, price, rating, image_url, cbd_percent, makes_high, consumption, vendor)
-    VALUES (${data.name}, ${data.type}, ${data.effects}, ${data.price}, ${data.rating}, ${data.image_url ?? null}, ${data.cbd_percent ?? null}, ${data.makes_high ?? true}, ${data.consumption ?? 'Flower'}, ${data.vendor ?? ''})
-    RETURNING id, name, type, effects, price, rating, image_url, cbd_percent, makes_high, consumption, vendor, created_at
+    INSERT INTO strains (name, type, effects, price, rating, image_url, images, cbd_percent, makes_high, consumption, vendor)
+    VALUES (${data.name}, ${data.type}, ${data.effects}, ${data.price}, ${data.rating}, ${primary}, ${JSON.stringify(images)}::jsonb, ${data.cbd_percent ?? null}, ${data.makes_high ?? true}, ${data.consumption ?? 'Flower'}, ${data.vendor ?? ''})
+    RETURNING id, name, type, effects, price, rating, image_url, images, cbd_percent, makes_high, consumption, vendor, created_at
   `;
-  return (rows as Strain[])[0];
+  return mapRow((rows as Record<string, unknown>[])[0]);
 }
 
 export async function updateStrain(
@@ -95,12 +114,15 @@ export async function updateStrain(
     price: number;
     rating: number;
     image_url?: string;
+    images?: string[];
     cbd_percent?: number | null;
     makes_high?: boolean;
     consumption?: string;
     vendor?: string;
   }
 ): Promise<Strain | null> {
+  const images = (data.images ?? []).filter(Boolean).slice(0, 3);
+  const primary = images[0] ?? data.image_url ?? null;
   const rows = await sql`
     UPDATE strains SET
       name = ${data.name},
@@ -108,15 +130,17 @@ export async function updateStrain(
       effects = ${data.effects},
       price = ${data.price},
       rating = ${data.rating},
-      image_url = ${data.image_url ?? null},
+      image_url = ${primary},
+      images = ${JSON.stringify(images)}::jsonb,
       cbd_percent = ${data.cbd_percent ?? null},
       makes_high = ${data.makes_high ?? true},
       consumption = ${data.consumption ?? 'Flower'},
       vendor = ${data.vendor ?? ''}
     WHERE id = ${id}
-    RETURNING id, name, type, effects, price, rating, image_url, cbd_percent, makes_high, consumption, vendor, created_at
+    RETURNING id, name, type, effects, price, rating, image_url, images, cbd_percent, makes_high, consumption, vendor, created_at
   `;
-  return (rows as Strain[])[0] ?? null;
+  const row = (rows as Record<string, unknown>[])[0];
+  return row ? mapRow(row) : null;
 }
 
 export async function deleteStrain(id: number): Promise<void> {

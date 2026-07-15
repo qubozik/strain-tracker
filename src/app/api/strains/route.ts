@@ -25,6 +25,7 @@ export async function POST(req: Request) {
       price: parseFloat(body.price) || 0,
       rating: Math.min(5, Math.max(0, parseInt(body.rating) || 0)),
       image_url: body.image_url,
+      images: Array.isArray(body.images) ? body.images : undefined,
       cbd_percent:
         body.cbd_percent === null || body.cbd_percent === undefined || body.cbd_percent === ''
           ? null
@@ -53,6 +54,7 @@ export async function PUT(req: Request) {
       price: parseFloat(body.price) || 0,
       rating: Math.min(5, Math.max(0, parseInt(body.rating) || 0)),
       image_url: body.image_url,
+      images: Array.isArray(body.images) ? body.images : undefined,
       cbd_percent:
         body.cbd_percent === null || body.cbd_percent === undefined || body.cbd_percent === ''
           ? null

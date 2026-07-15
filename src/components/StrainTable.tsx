@@ -26,6 +26,7 @@ export default function StrainTable({ strains, onEdit, onDelete }: StrainTablePr
       <table className="w-full text-sm">
         <thead>
           <tr className="bg-surface2 text-muted text-left">
+            <th className="px-3 py-2 font-medium">Photo</th>
             <th className="px-3 py-2 font-medium">Name</th>
             <th className="px-3 py-2 font-medium">Type</th>
             <th className="px-3 py-2 font-medium">Vendor</th>
@@ -41,6 +42,14 @@ export default function StrainTable({ strains, onEdit, onDelete }: StrainTablePr
         <tbody>
           {strains.map((s) => (
             <tr key={s.id} className="border-t border-line hover:bg-surface2/50">
+              <td className="px-3 py-2">
+                {s.images && s.images.length > 0 ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={s.images[0]} alt={s.name} className="h-10 w-10 object-cover rounded border border-line" />
+                ) : (
+                  <div className="h-10 w-10 rounded border border-line bg-surface2" />
+                )}
+              </td>
               <td className="px-3 py-2 font-medium">{s.name}</td>
               <td className="px-3 py-2 text-fg">{s.type}</td>
               <td className="px-3 py-2 text-muted">{s.vendor || '—'}</td>

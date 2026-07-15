@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import ImageInput from './ImageInput';
 
 interface Strain {
   id: number;
@@ -10,6 +11,7 @@ interface Strain {
   price: number;
   rating: number;
   image_url: string | null;
+  images: string[];
   cbd_percent: number | null;
   makes_high: boolean;
   consumption: string;
@@ -68,7 +70,7 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
   const [effects, setEffects] = useState(strain.effects);
   const [price, setPrice] = useState(String(strain.price));
   const [rating, setRating] = useState(strain.rating);
-  const [imageUrl, setImageUrl] = useState(strain.image_url ?? '');
+  const [images, setImages] = useState<string[]>(strain.images ?? []);
   const [cbdPercent, setCbdPercent] = useState(
     strain.cbd_percent === null || strain.cbd_percent === undefined ? '' : String(strain.cbd_percent)
   );
@@ -90,7 +92,7 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
           effects,
           price: parseFloat(price) || 0,
           rating,
-          image_url: imageUrl || undefined,
+          images,
           cbd_percent: cbdPercent === '' ? null : parseFloat(cbdPercent),
           makes_high: makesHigh,
           consumption,
@@ -136,7 +138,10 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <input type="number" step="0.01" min="0" value={price} onChange={(e) => setPrice(e.target.value)} className="rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none" />
-          <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="Image URL" className="rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none" />
+        </div>
+        <div>
+          <label className="block text-sm text-muted mb-1">Photos (up to 3)</label>
+          <ImageInput images={images} onChange={setImages} max={3} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <input type="number" step="0.1" min="0" max="100" value={cbdPercent} onChange={(e) => setCbdPercent(e.target.value)} placeholder="CBD %" className="rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none" />
@@ -161,9 +166,18 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
 
   return (
     <div className="rounded-xl border border-line bg-surface overflow-hidden">
-      {strain.image_url && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={strain.image_url} alt={strain.name} className="w-full h-40 object-cover" />
+      {strain.images && strain.images.length > 0 && (
+        <div className={`grid gap-0.5 ${strain.images.length === 1 ? 'grid-cols-1' : 'grid-cols-3'}`}>
+          {strain.images.slice(0, 3).map((src, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={i}
+              src={src}
+              alt={`${strain.name} photo ${i + 1}`}
+              className={`w-full object-cover ${strain.images.length === 1 ? 'h-40' : 'h-24'}`}
+            />
+          ))}
+        </div>
       )}
       <div className="p-5 space-y-3">
         <div className="flex items-start justify-between gap-2">

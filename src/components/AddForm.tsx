@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import ImageInput from './ImageInput';
 
 interface AddFormProps {
   onAdded: () => void;
@@ -16,6 +17,7 @@ export default function AddForm({ onAdded }: AddFormProps) {
   const [price, setPrice] = useState('');
   const [rating, setRating] = useState(0);
   const [imageUrl, setImageUrl] = useState('');
+  const [images, setImages] = useState<string[]>([]);
   const [cbdPercent, setCbdPercent] = useState('');
   const [makesHigh, setMakesHigh] = useState(true);
   const [consumption, setConsumption] = useState('Flower');
@@ -38,6 +40,7 @@ export default function AddForm({ onAdded }: AddFormProps) {
           price: parseFloat(price) || 0,
           rating,
           image_url: imageUrl || undefined,
+          images,
           cbd_percent: cbdPercent === '' ? null : parseFloat(cbdPercent),
           makes_high: makesHigh,
           consumption,
@@ -53,6 +56,7 @@ export default function AddForm({ onAdded }: AddFormProps) {
       setPrice('');
       setRating(0);
       setImageUrl('');
+      setImages([]);
       setCbdPercent('');
       setMakesHigh(true);
       setConsumption('Flower');
@@ -139,15 +143,11 @@ export default function AddForm({ onAdded }: AddFormProps) {
             placeholder="0.00"
           />
         </div>
-        <div>
-          <label className="block text-sm text-muted mb-1">Image URL (optional)</label>
-          <input
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            className="w-full rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none"
-            placeholder="https://..."
-          />
-        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm text-muted mb-1">Photos (up to 3)</label>
+        <ImageInput images={images} onChange={setImages} max={3} />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
