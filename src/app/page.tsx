@@ -49,7 +49,7 @@ export default async function Home() {
       {!dbError && strains.length === 0 && stats.total === 0 && (
         <div className="rounded-xl border border-line bg-surface text-fg p-4 mb-6">
           <p className="text-sm">
-            <strong>No strains yet.</strong> Add your first strain using the form below to get started.
+            <strong>No strains yet.</strong> Click <strong>+ Add Strain</strong> to add your first one.
           </p>
         </div>
       )}
