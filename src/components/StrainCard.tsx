@@ -10,6 +10,8 @@ interface Strain {
   price: number;
   rating: number;
   image_url: string | null;
+  cbd_percent: number | null;
+  makes_high: boolean;
   created_at: string;
 }
 
@@ -62,6 +64,10 @@ export default function StrainCard({ strain, onUpdated, onDeleted }: StrainCardP
   const [price, setPrice] = useState(String(strain.price));
   const [rating, setRating] = useState(strain.rating);
   const [imageUrl, setImageUrl] = useState(strain.image_url ?? '');
+  const [cbdPercent, setCbdPercent] = useState(
+    strain.cbd_percent === null || strain.cbd_percent === undefined ? '' : String(strain.cbd_percent)
+  );
+  const [makesHigh, setMakesHigh] = useState(strain.makes_high);
 
   async function handleSave() {
     setSubmitting(true);
@@ -78,6 +84,8 @@ export default function StrainCard({ strain, onUpdated, onDeleted }: StrainCardP
           price: parseFloat(price) || 0,
           rating,
           image_url: imageUrl || undefined,
+          cbd_percent: cbdPercent === '' ? null : parseFloat(cbdPercent),
+          makes_high: makesHigh,
         }),
       });
       if (!res.ok) throw new Error('Failed to update');
@@ -114,6 +122,13 @@ export default function StrainCard({ strain, onUpdated, onDeleted }: StrainCardP
           <input type="number" step="0.01" min="0" value={price} onChange={(e) => setPrice(e.target.value)} className="rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none" />
           <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="Image URL" className="rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none" />
         </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input type="number" step="0.1" min="0" max="100" value={cbdPercent} onChange={(e) => setCbdPercent(e.target.value)} placeholder="CBD %" className="rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none" />
+          <label className="flex items-center gap-2 cursor-pointer select-none px-1">
+            <input type="checkbox" checked={makesHigh} onChange={(e) => setMakesHigh(e.target.checked)} className="h-5 w-5 rounded border-neutral-600 bg-neutral-800 accent-green-600" />
+            <span className="text-sm text-neutral-300">Makes me high</span>
+          </label>
+        </div>
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5].map((star) => (
             <button key={star} type="button" onClick={() => setRating(star === rating ? 0 : star)} className={`text-2xl ${star <= rating ? 'text-yellow-400' : 'text-neutral-600'}`}>★</button>
@@ -147,6 +162,22 @@ export default function StrainCard({ strain, onUpdated, onDeleted }: StrainCardP
         {strain.effects && (
           <p className="text-sm text-neutral-400">{strain.effects}</p>
         )}
+        <div className="flex flex-wrap gap-2">
+          {strain.cbd_percent !== null && strain.cbd_percent !== undefined && (
+            <span className="inline-block text-xs px-2 py-0.5 rounded-full border bg-teal-900/40 text-teal-300 border-teal-700/50">
+              CBD {Number(strain.cbd_percent)}%
+            </span>
+          )}
+          <span
+            className={`inline-block text-xs px-2 py-0.5 rounded-full border ${
+              strain.makes_high
+                ? 'bg-pink-900/40 text-pink-300 border-pink-700/50'
+                : 'bg-neutral-800 text-neutral-400 border-neutral-700'
+            }`}
+          >
+            {strain.makes_high ? 'Psychoactive' : 'Non-psychoactive'}
+          </span>
+        </div>
         <div className="flex items-center justify-between pt-2 border-t border-neutral-800">
           <span className="text-neutral-300 font-medium">${Number(strain.price).toFixed(2)}</span>
           <span className="text-xs text-neutral-500">

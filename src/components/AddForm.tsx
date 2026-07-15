@@ -15,6 +15,8 @@ export default function AddForm({ onAdded }: AddFormProps) {
   const [price, setPrice] = useState('');
   const [rating, setRating] = useState(0);
   const [imageUrl, setImageUrl] = useState('');
+  const [cbdPercent, setCbdPercent] = useState('');
+  const [makesHigh, setMakesHigh] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -33,6 +35,8 @@ export default function AddForm({ onAdded }: AddFormProps) {
           price: parseFloat(price) || 0,
           rating,
           image_url: imageUrl || undefined,
+          cbd_percent: cbdPercent === '' ? null : parseFloat(cbdPercent),
+          makes_high: makesHigh,
         }),
       });
       if (!res.ok) {
@@ -44,6 +48,8 @@ export default function AddForm({ onAdded }: AddFormProps) {
       setPrice('');
       setRating(0);
       setImageUrl('');
+      setCbdPercent('');
+      setMakesHigh(true);
       onAdded();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -110,6 +116,33 @@ export default function AddForm({ onAdded }: AddFormProps) {
             className="w-full rounded-lg bg-neutral-900 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none"
             placeholder="https://..."
           />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm text-neutral-400 mb-1">CBD % (if product also contains THC)</label>
+          <input
+            type="number"
+            step="0.1"
+            min="0"
+            max="100"
+            value={cbdPercent}
+            onChange={(e) => setCbdPercent(e.target.value)}
+            className="w-full rounded-lg bg-neutral-900 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none"
+            placeholder="e.g. 12.5"
+          />
+        </div>
+        <div className="flex items-end">
+          <label className="flex items-center gap-2 cursor-pointer select-none py-2">
+            <input
+              type="checkbox"
+              checked={makesHigh}
+              onChange={(e) => setMakesHigh(e.target.checked)}
+              className="h-5 w-5 rounded border-neutral-600 bg-neutral-900 accent-green-600"
+            />
+            <span className="text-sm text-neutral-300">Makes me high (psychoactive)</span>
+          </label>
         </div>
       </div>
 

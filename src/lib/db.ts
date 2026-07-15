@@ -24,6 +24,8 @@ export interface Strain {
   price: number;
   rating: number;
   image_url: string | null;
+  cbd_percent: number | null;
+  makes_high: boolean;
   created_at: string;
 }
 
@@ -37,15 +39,20 @@ export async function ensureSchema() {
       price NUMERIC(10,2) NOT NULL DEFAULT 0,
       rating INTEGER NOT NULL DEFAULT 0 CHECK (rating >= 0 AND rating <= 5),
       image_url TEXT,
+      cbd_percent NUMERIC(5,2),
+      makes_high BOOLEAN NOT NULL DEFAULT TRUE,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `;
+  // Migrate existing tables that predate these columns
+  await sql`ALTER TABLE strains ADD COLUMN IF NOT EXISTS cbd_percent NUMERIC(5,2)`;
+  await sql`ALTER TABLE strains ADD COLUMN IF NOT EXISTS makes_high BOOLEAN NOT NULL DEFAULT TRUE`;
 }
 
 export async function getStrains(): Promise<Strain[]> {
   await ensureSchema();
   const rows = await sql`
-    SELECT id, name, type, effects, price, rating, image_url, created_at
+    SELECT id, name, type, effects, price, rating, image_url, cbd_percent, makes_high, created_at
     FROM strains
     ORDER BY created_at DESC
   `;
@@ -59,12 +66,14 @@ export async function createStrain(data: {
   price: number;
   rating: number;
   image_url?: string;
+  cbd_percent?: number | null;
+  makes_high?: boolean;
 }): Promise<Strain> {
   await ensureSchema();
   const rows = await sql`
-    INSERT INTO strains (name, type, effects, price, rating, image_url)
-    VALUES (${data.name}, ${data.type}, ${data.effects}, ${data.price}, ${data.rating}, ${data.image_url ?? null})
-    RETURNING id, name, type, effects, price, rating, image_url, created_at
+    INSERT INTO strains (name, type, effects, price, rating, image_url, cbd_percent, makes_high)
+    VALUES (${data.name}, ${data.type}, ${data.effects}, ${data.price}, ${data.rating}, ${data.image_url ?? null}, ${data.cbd_percent ?? null}, ${data.makes_high ?? true})
+    RETURNING id, name, type, effects, price, rating, image_url, cbd_percent, makes_high, created_at
   `;
   return (rows as Strain[])[0];
 }
@@ -78,6 +87,8 @@ export async function updateStrain(
     price: number;
     rating: number;
     image_url?: string;
+    cbd_percent?: number | null;
+    makes_high?: boolean;
   }
 ): Promise<Strain | null> {
   const rows = await sql`
@@ -87,9 +98,11 @@ export async function updateStrain(
       effects = ${data.effects},
       price = ${data.price},
       rating = ${data.rating},
-      image_url = ${data.image_url ?? null}
+      image_url = ${data.image_url ?? null},
+      cbd_percent = ${data.cbd_percent ?? null},
+      makes_high = ${data.makes_high ?? true}
     WHERE id = ${id}
-    RETURNING id, name, type, effects, price, rating, image_url, created_at
+    RETURNING id, name, type, effects, price, rating, image_url, cbd_percent, makes_high, created_at
   `;
   return (rows as Strain[])[0] ?? null;
 }
