@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
+import { getStrains } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,11 +18,22 @@ export async function GET() {
   try {
     const sql = neon(url);
     const rows = await sql`SELECT 1 AS ok`;
+    let appQuery: string;
+    let count = -1;
+    try {
+      const strains = await getStrains();
+      count = strains.length;
+      appQuery = 'success';
+    } catch (e) {
+      appQuery = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+    }
     return NextResponse.json({
       DATABASE_URL_set: true,
       DATABASE_URL_preview: urlPreview,
       connection_test: 'success',
       result: rows,
+      app_getStrains: appQuery,
+      strain_count: count,
     });
   } catch (err) {
     return NextResponse.json({
