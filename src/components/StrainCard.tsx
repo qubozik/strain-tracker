@@ -12,6 +12,8 @@ interface Strain {
   image_url: string | null;
   cbd_percent: number | null;
   makes_high: boolean;
+  consumption: string;
+  vendor: string;
   created_at: string;
 }
 
@@ -22,6 +24,7 @@ interface StrainCardProps {
 }
 
 const strainTypes = ['Sativa', 'Indica', 'Hybrid', 'Indica-dominant', 'Sativa-dominant', 'CBD'];
+const consumptionMethods = ['Flower', 'Cart', 'Concentrate', 'Edible', 'Pre-roll', 'Vape', 'Tincture', 'Topical'];
 
 function StarRow({ rating }: { rating: number }) {
   return (
@@ -68,6 +71,8 @@ export default function StrainCard({ strain, onUpdated, onDeleted }: StrainCardP
     strain.cbd_percent === null || strain.cbd_percent === undefined ? '' : String(strain.cbd_percent)
   );
   const [makesHigh, setMakesHigh] = useState(strain.makes_high);
+  const [consumption, setConsumption] = useState(strain.consumption ?? 'Flower');
+  const [vendor, setVendor] = useState(strain.vendor ?? '');
 
   async function handleSave() {
     setSubmitting(true);
@@ -86,6 +91,8 @@ export default function StrainCard({ strain, onUpdated, onDeleted }: StrainCardP
           image_url: imageUrl || undefined,
           cbd_percent: cbdPercent === '' ? null : parseFloat(cbdPercent),
           makes_high: makesHigh,
+          consumption,
+          vendor,
         }),
       });
       if (!res.ok) throw new Error('Failed to update');
@@ -118,6 +125,12 @@ export default function StrainCard({ strain, onUpdated, onDeleted }: StrainCardP
           </select>
         </div>
         <input value={effects} onChange={(e) => setEffects(e.target.value)} placeholder="Effects" className="w-full rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <select value={consumption} onChange={(e) => setConsumption(e.target.value)} className="rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none">
+            {consumptionMethods.map((m) => <option key={m} value={m}>{m}</option>)}
+          </select>
+          <input value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder="Vendor / Company" className="rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none" />
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <input type="number" step="0.01" min="0" value={price} onChange={(e) => setPrice(e.target.value)} className="rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none" />
           <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="Image URL" className="rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none" />
@@ -156,6 +169,9 @@ export default function StrainCard({ strain, onUpdated, onDeleted }: StrainCardP
             <span className={`inline-block text-xs px-2 py-0.5 rounded-full border mt-1 ${typeColor(strain.type)}`}>
               {strain.type}
             </span>
+            {strain.vendor && (
+              <p className="text-xs text-neutral-500 mt-1">{strain.vendor}</p>
+            )}
           </div>
           <StarRow rating={strain.rating} />
         </div>
@@ -163,6 +179,9 @@ export default function StrainCard({ strain, onUpdated, onDeleted }: StrainCardP
           <p className="text-sm text-neutral-400">{strain.effects}</p>
         )}
         <div className="flex flex-wrap gap-2">
+          <span className="inline-block text-xs px-2 py-0.5 rounded-full border bg-neutral-800 text-neutral-300 border-neutral-700">
+            {strain.consumption ?? 'Flower'}
+          </span>
           {strain.cbd_percent !== null && strain.cbd_percent !== undefined && (
             <span className="inline-block text-xs px-2 py-0.5 rounded-full border bg-teal-900/40 text-teal-300 border-teal-700/50">
               CBD {Number(strain.cbd_percent)}%

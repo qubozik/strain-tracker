@@ -25,7 +25,8 @@ export default function StrainList({ initialStrains, refresh }: StrainListProps)
       const matchesQuery =
         !q ||
         s.name.toLowerCase().includes(q) ||
-        s.effects.toLowerCase().includes(q);
+        s.effects.toLowerCase().includes(q) ||
+        (s.vendor ?? '').toLowerCase().includes(q);
       return matchesType && matchesQuery;
     });
   }, [initialStrains, query, typeFilter]);
@@ -36,7 +37,7 @@ export default function StrainList({ initialStrains, refresh }: StrainListProps)
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by name or effects..."
+          placeholder="Search by name, effects, or vendor..."
           className="flex-1 min-w-48 rounded-lg bg-neutral-900 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none"
         />
         <select

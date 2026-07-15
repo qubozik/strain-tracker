@@ -7,6 +7,7 @@ interface AddFormProps {
 }
 
 const strainTypes = ['Sativa', 'Indica', 'Hybrid', 'Indica-dominant', 'Sativa-dominant', 'CBD'];
+const consumptionMethods = ['Flower', 'Cart', 'Concentrate', 'Edible', 'Pre-roll', 'Vape', 'Tincture', 'Topical'];
 
 export default function AddForm({ onAdded }: AddFormProps) {
   const [name, setName] = useState('');
@@ -17,6 +18,8 @@ export default function AddForm({ onAdded }: AddFormProps) {
   const [imageUrl, setImageUrl] = useState('');
   const [cbdPercent, setCbdPercent] = useState('');
   const [makesHigh, setMakesHigh] = useState(true);
+  const [consumption, setConsumption] = useState('Flower');
+  const [vendor, setVendor] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -37,6 +40,8 @@ export default function AddForm({ onAdded }: AddFormProps) {
           image_url: imageUrl || undefined,
           cbd_percent: cbdPercent === '' ? null : parseFloat(cbdPercent),
           makes_high: makesHigh,
+          consumption,
+          vendor,
         }),
       });
       if (!res.ok) {
@@ -50,6 +55,8 @@ export default function AddForm({ onAdded }: AddFormProps) {
       setImageUrl('');
       setCbdPercent('');
       setMakesHigh(true);
+      setConsumption('Flower');
+      setVendor('');
       onAdded();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -93,6 +100,30 @@ export default function AddForm({ onAdded }: AddFormProps) {
           className="w-full rounded-lg bg-neutral-900 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none"
           placeholder="e.g. Happy, relaxed, creative"
         />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm text-neutral-400 mb-1">Consumption Method</label>
+          <select
+            value={consumption}
+            onChange={(e) => setConsumption(e.target.value)}
+            className="w-full rounded-lg bg-neutral-900 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none"
+          >
+            {consumptionMethods.map((m) => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm text-neutral-400 mb-1">Vendor / Company</label>
+          <input
+            value={vendor}
+            onChange={(e) => setVendor(e.target.value)}
+            className="w-full rounded-lg bg-neutral-900 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none"
+            placeholder="e.g. Cookies, Raw Garden"
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

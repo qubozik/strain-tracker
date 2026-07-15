@@ -30,6 +30,8 @@ export async function POST(req: Request) {
           ? null
           : parseFloat(body.cbd_percent),
       makes_high: body.makes_high !== false,
+      consumption: body.consumption ?? 'Flower',
+      vendor: body.vendor ?? '',
     });
     return NextResponse.json(strain, { status: 201 });
   } catch (err) {
@@ -56,6 +58,8 @@ export async function PUT(req: Request) {
           ? null
           : parseFloat(body.cbd_percent),
       makes_high: body.makes_high !== false,
+      consumption: body.consumption ?? 'Flower',
+      vendor: body.vendor ?? '',
     });
     if (!strain) {
       return NextResponse.json({ error: 'Strain not found' }, { status: 404 });

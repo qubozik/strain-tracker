@@ -10,13 +10,13 @@ export async function GET(req: Request) {
     const strains = await getStrains();
 
     if (format === 'csv') {
-      const header = 'id,name,type,effects,price,rating,cbd_percent,makes_high,image_url,created_at';
+      const header = 'id,name,type,vendor,consumption,effects,price,rating,cbd_percent,makes_high,image_url,created_at';
       const rows = strains.map((s) => {
         const esc = (v: string | number | boolean | null) => {
           const str = v === null ? '' : String(v);
           return `"${str.replace(/"/g, '""')}"`;
         };
-        return [s.id, s.name, s.type, s.effects, s.price, s.rating, s.cbd_percent, s.makes_high, s.image_url, s.created_at]
+        return [s.id, s.name, s.type, s.vendor, s.consumption, s.effects, s.price, s.rating, s.cbd_percent, s.makes_high, s.image_url, s.created_at]
           .map(esc)
           .join(',');
       });
