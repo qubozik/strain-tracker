@@ -13,10 +13,12 @@ export default async function Home() {
     bestRated: null,
   };
 
+  let dbError: string | null = null;
+
   try {
     [strains, stats] = await Promise.all([getStrains(), getStats()]);
   } catch (err) {
-    // DB not configured yet; render empty state with error banner
+    dbError = err instanceof Error ? err.message : String(err);
     console.error('DB error:', err);
   }
 
@@ -29,7 +31,18 @@ export default async function Home() {
         <p className="text-neutral-400 mt-1">Track your strains, effects, prices, and ratings.</p>
       </header>
 
-      {strains.length === 0 && stats.total === 0 && (
+      {dbError && (
+        <div className="rounded-xl border border-red-800/50 bg-red-900/20 text-red-200 p-4 mb-6">
+          <p className="text-sm">
+            <strong>Database error:</strong> {dbError}
+          </p>
+          <p className="text-xs mt-2 text-red-300/70">
+ Visit <code>/api/debug</code> for connection diagnostics. Ensure <code>DATABASE_URL</code> is set for the Production environment in Vercel and that you redeployed after adding it.
+          </p>
+        </div>
+      )}
+
+      {!dbError && strains.length === 0 && stats.total === 0 && (
         <div className="rounded-xl border border-yellow-800/50 bg-yellow-900/20 text-yellow-200 p-4 mb-6">
           <p className="text-sm">
             <strong>Database not connected.</strong> Set the <code>DATABASE_URL</code> environment variable in Vercel with your Neon Postgres connection string.
