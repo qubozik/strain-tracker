@@ -19,13 +19,13 @@ export default function ExportButtons() {
     <div className="flex gap-2">
       <button
         onClick={() => download('json')}
-        className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-sm"
+        className="px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface border border-line text-sm"
       >
         Export JSON
       </button>
       <button
         onClick={() => download('csv')}
-        className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-sm"
+        className="px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface border border-line text-sm"
       >
         Export CSV
       </button>

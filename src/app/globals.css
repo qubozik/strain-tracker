@@ -1,23 +1,59 @@
 @import "tailwindcss";
 
+/*
+  Earthy GNOME 2 / Clearlooks-inspired palette.
+  Light = cream + warm browns. Dark = deep browns + cream text.
+  Accents: earthy green (primary), orange, red.
+*/
+
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --card: #141414;
-  --border: #262626;
-  --accent: #16a34a;
-  --accent-hover: #15803d;
-  --muted: #737373;
+  --bg: #ece3cf;
+  --surface: #f6efdd;
+  --surface2: #e4d8bd;
+  --fg: #3b2f21;
+  --muted: #7c6a4f;
+  --line: #cbb994;
+  --brand: #5f7d3a;
+  --brand-hover: #4d6a2c;
+  --brand-fg: #f6efdd;
+  --earth-orange: #c56a29;
+  --earth-red: #a83b2b;
+  --star: #d98a2b;
+}
+
+.dark {
+  --bg: #241d14;
+  --surface: #2f2619;
+  --surface2: #3a2f20;
+  --fg: #ece0c9;
+  --muted: #a6906c;
+  --line: #4b3d29;
+  --brand: #86a557;
+  --brand-hover: #97b566;
+  --brand-fg: #241d14;
+  --earth-orange: #d98544;
+  --earth-red: #c85a45;
+  --star: #e0a13c;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface2);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-fg: var(--brand-fg);
+  --color-earth-orange: var(--earth-orange);
+  --color-earth-red: var(--earth-red);
+  --color-star: var(--star);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg);
+  color: var(--fg);
 }

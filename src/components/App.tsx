@@ -29,7 +29,7 @@ export default function App({ initialStrains, initialStats }: AppProps) {
     <div className="space-y-8">
       <Dashboard stats={stats} strains={strains} />
 
-      <div className="rounded-xl border border-neutral-700 bg-neutral-900 p-6">
+      <div className="rounded-xl border border-line bg-surface p-6">
         <h2 className="text-lg font-semibold mb-4">Add a Strain</h2>
         <AddForm onAdded={refresh} />
       </div>

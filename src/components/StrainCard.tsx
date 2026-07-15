@@ -32,7 +32,7 @@ function StarRow({ rating }: { rating: number }) {
   return (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((star) => (
-        <span key={star} className={`text-lg ${star <= rating ? 'text-yellow-400' : 'text-neutral-700'}`}>
+        <span key={star} className={`text-lg ${star <= rating ? 'text-star' : 'text-line'}`}>
           ★
         </span>
       ))}
@@ -44,16 +44,16 @@ function typeColor(type: string): string {
   switch (type) {
     case 'Sativa':
     case 'Sativa-dominant':
-      return 'bg-orange-900/40 text-orange-300 border-orange-700/50';
+      return 'bg-earth-orange/15 text-earth-orange border-earth-orange/40';
     case 'Indica':
     case 'Indica-dominant':
-      return 'bg-purple-900/40 text-purple-300 border-purple-700/50';
+      return 'bg-earth-red/15 text-earth-red border-earth-red/40';
     case 'Hybrid':
-      return 'bg-blue-900/40 text-blue-300 border-blue-700/50';
+      return 'bg-brand/15 text-brand border-brand/40';
     case 'CBD':
-      return 'bg-teal-900/40 text-teal-300 border-teal-700/50';
+      return 'bg-brand/10 text-brand border-brand/30';
     default:
-      return 'bg-neutral-800 text-neutral-300 border-neutral-700';
+      return 'bg-surface2 text-muted border-line';
   }
 }
 
@@ -120,47 +120,47 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
 
   if (editing) {
     return (
-      <div className="rounded-xl border border-neutral-700 bg-neutral-900 p-5 space-y-3">
+      <div className="rounded-xl border border-line bg-surface p-5 space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <input value={name} onChange={(e) => setName(e.target.value)} className="rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none" />
-          <select value={type} onChange={(e) => setType(e.target.value)} className="rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none">
+          <input value={name} onChange={(e) => setName(e.target.value)} className="rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none" />
+          <select value={type} onChange={(e) => setType(e.target.value)} className="rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none">
             {strainTypes.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
-        <input value={effects} onChange={(e) => setEffects(e.target.value)} placeholder="Effects" className="w-full rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none" />
+        <input value={effects} onChange={(e) => setEffects(e.target.value)} placeholder="Effects" className="w-full rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <select value={consumption} onChange={(e) => setConsumption(e.target.value)} className="rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none">
+          <select value={consumption} onChange={(e) => setConsumption(e.target.value)} className="rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none">
             {consumptionMethods.map((m) => <option key={m} value={m}>{m}</option>)}
           </select>
-          <input value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder="Vendor / Company" className="rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none" />
+          <input value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder="Vendor / Company" className="rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <input type="number" step="0.01" min="0" value={price} onChange={(e) => setPrice(e.target.value)} className="rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none" />
-          <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="Image URL" className="rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none" />
+          <input type="number" step="0.01" min="0" value={price} onChange={(e) => setPrice(e.target.value)} className="rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none" />
+          <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="Image URL" className="rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <input type="number" step="0.1" min="0" max="100" value={cbdPercent} onChange={(e) => setCbdPercent(e.target.value)} placeholder="CBD %" className="rounded-lg bg-neutral-800 border border-neutral-700 px-3 py-2 focus:border-green-600 focus:outline-none" />
+          <input type="number" step="0.1" min="0" max="100" value={cbdPercent} onChange={(e) => setCbdPercent(e.target.value)} placeholder="CBD %" className="rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none" />
           <label className="flex items-center gap-2 cursor-pointer select-none px-1">
-            <input type="checkbox" checked={makesHigh} onChange={(e) => setMakesHigh(e.target.checked)} className="h-5 w-5 rounded border-neutral-600 bg-neutral-800 accent-green-600" />
-            <span className="text-sm text-neutral-300">Makes me high</span>
+            <input type="checkbox" checked={makesHigh} onChange={(e) => setMakesHigh(e.target.checked)} className="h-5 w-5 rounded border-line bg-surface2 accent-brand" />
+            <span className="text-sm text-fg">Makes me high</span>
           </label>
         </div>
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5].map((star) => (
-            <button key={star} type="button" onClick={() => setRating(star === rating ? 0 : star)} className={`text-2xl ${star <= rating ? 'text-yellow-400' : 'text-neutral-600'}`}>★</button>
+            <button key={star} type="button" onClick={() => setRating(star === rating ? 0 : star)} className={`text-2xl ${star <= rating ? 'text-star' : 'text-line'}`}>★</button>
           ))}
         </div>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-earth-red text-sm">{error}</p>}
         <div className="flex gap-2">
-          <button onClick={handleSave} disabled={submitting} className="px-4 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 disabled:opacity-50 text-sm">Save</button>
-          <button onClick={() => { setEditing(false); onClose?.(); }} className="px-4 py-1.5 rounded-lg bg-neutral-700 hover:bg-neutral-600 text-sm">Cancel</button>
+          <button onClick={handleSave} disabled={submitting} className="px-4 py-1.5 rounded-lg bg-brand hover:bg-brand-hover text-brand-fg disabled:opacity-50 text-sm">Save</button>
+          <button onClick={() => { setEditing(false); onClose?.(); }} className="px-4 py-1.5 rounded-lg bg-surface2 hover:bg-surface border border-line text-sm">Cancel</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-neutral-700 bg-neutral-900 overflow-hidden">
+    <div className="rounded-xl border border-line bg-surface overflow-hidden">
       {strain.image_url && (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={strain.image_url} alt={strain.name} className="w-full h-40 object-cover" />
@@ -173,42 +173,42 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
               {strain.type}
             </span>
             {strain.vendor && (
-              <p className="text-xs text-neutral-500 mt-1">{strain.vendor}</p>
+              <p className="text-xs text-muted mt-1">{strain.vendor}</p>
             )}
           </div>
           <StarRow rating={strain.rating} />
         </div>
         {strain.effects && (
-          <p className="text-sm text-neutral-400">{strain.effects}</p>
+          <p className="text-sm text-muted">{strain.effects}</p>
         )}
         <div className="flex flex-wrap gap-2">
-          <span className="inline-block text-xs px-2 py-0.5 rounded-full border bg-neutral-800 text-neutral-300 border-neutral-700">
+          <span className="inline-block text-xs px-2 py-0.5 rounded-full border bg-surface2 text-fg border-line">
             {strain.consumption ?? 'Flower'}
           </span>
           {strain.cbd_percent !== null && strain.cbd_percent !== undefined && (
-            <span className="inline-block text-xs px-2 py-0.5 rounded-full border bg-teal-900/40 text-teal-300 border-teal-700/50">
+            <span className="inline-block text-xs px-2 py-0.5 rounded-full border bg-brand/10 text-brand border-brand/30">
               CBD {Number(strain.cbd_percent)}%
             </span>
           )}
           <span
             className={`inline-block text-xs px-2 py-0.5 rounded-full border ${
               strain.makes_high
-                ? 'bg-pink-900/40 text-pink-300 border-pink-700/50'
-                : 'bg-neutral-800 text-neutral-400 border-neutral-700'
+                ? 'bg-earth-orange/15 text-earth-orange border-earth-orange/40'
+                : 'bg-surface2 text-muted border-line'
             }`}
           >
             {strain.makes_high ? 'Psychoactive' : 'Non-psychoactive'}
           </span>
         </div>
-        <div className="flex items-center justify-between pt-2 border-t border-neutral-800">
-          <span className="text-neutral-300 font-medium">${Number(strain.price).toFixed(2)}</span>
-          <span className="text-xs text-neutral-500">
+        <div className="flex items-center justify-between pt-2 border-t border-line">
+          <span className="text-fg font-medium">${Number(strain.price).toFixed(2)}</span>
+          <span className="text-xs text-muted">
             {new Date(strain.created_at).toLocaleDateString()}
           </span>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setEditing(true)} className="text-xs px-3 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 border border-neutral-700">Edit</button>
-          <button onClick={handleDelete} className="text-xs px-3 py-1 rounded-lg bg-red-900/40 text-red-300 hover:bg-red-800/60 border border-red-800/50">Delete</button>
+          <button onClick={() => setEditing(true)} className="text-xs px-3 py-1 rounded-lg bg-surface2 hover:bg-surface border border-line">Edit</button>
+          <button onClick={handleDelete} className="text-xs px-3 py-1 rounded-lg bg-earth-red/15 text-earth-red hover:bg-earth-red/25 border border-earth-red/40">Delete</button>
         </div>
       </div>
     </div>
