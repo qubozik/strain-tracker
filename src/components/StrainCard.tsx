@@ -21,6 +21,8 @@ interface StrainCardProps {
   strain: Strain;
   onUpdated: () => void;
   onDeleted: () => void;
+  initialEditing?: boolean;
+  onClose?: () => void;
 }
 
 const strainTypes = ['Sativa', 'Indica', 'Hybrid', 'Indica-dominant', 'Sativa-dominant', 'CBD'];
@@ -55,8 +57,8 @@ function typeColor(type: string): string {
   }
 }
 
-export default function StrainCard({ strain, onUpdated, onDeleted }: StrainCardProps) {
-  const [editing, setEditing] = useState(false);
+export default function StrainCard({ strain, onUpdated, onDeleted, initialEditing = false, onClose }: StrainCardProps) {
+  const [editing, setEditing] = useState(initialEditing);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -98,6 +100,7 @@ export default function StrainCard({ strain, onUpdated, onDeleted }: StrainCardP
       if (!res.ok) throw new Error('Failed to update');
       setEditing(false);
       onUpdated();
+      onClose?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -150,7 +153,7 @@ export default function StrainCard({ strain, onUpdated, onDeleted }: StrainCardP
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <div className="flex gap-2">
           <button onClick={handleSave} disabled={submitting} className="px-4 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 disabled:opacity-50 text-sm">Save</button>
-          <button onClick={() => setEditing(false)} className="px-4 py-1.5 rounded-lg bg-neutral-700 hover:bg-neutral-600 text-sm">Cancel</button>
+          <button onClick={() => { setEditing(false); onClose?.(); }} className="px-4 py-1.5 rounded-lg bg-neutral-700 hover:bg-neutral-600 text-sm">Cancel</button>
         </div>
       </div>
     );
