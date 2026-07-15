@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createStrain, getStrains } from '@/lib/db';
+import { persistImages } from '@/lib/images';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 export async function GET() {
   try {
@@ -25,7 +27,7 @@ export async function POST(req: Request) {
       price: parseFloat(body.price) || 0,
       rating: Math.min(5, Math.max(0, parseInt(body.rating) || 0)),
       image_url: body.image_url,
-      images: Array.isArray(body.images) ? body.images : undefined,
+      images: Array.isArray(body.images) ? await persistImages(body.images) : undefined,
       cbd_percent:
         body.cbd_percent === null || body.cbd_percent === undefined || body.cbd_percent === ''
           ? null
@@ -54,7 +56,7 @@ export async function PUT(req: Request) {
       price: parseFloat(body.price) || 0,
       rating: Math.min(5, Math.max(0, parseInt(body.rating) || 0)),
       image_url: body.image_url,
-      images: Array.isArray(body.images) ? body.images : undefined,
+      images: Array.isArray(body.images) ? await persistImages(body.images) : undefined,
       cbd_percent:
         body.cbd_percent === null || body.cbd_percent === undefined || body.cbd_percent === ''
           ? null
