@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import ImageInput from './ImageInput';
+import TerpeneInput from './TerpeneInput';
 import Lightbox from './Lightbox';
 
 interface Strain {
@@ -13,6 +14,7 @@ interface Strain {
   rating: number;
   image_url: string | null;
   images: string[];
+  terpenes: string[];
   cbd_percent: number | null;
   makes_high: boolean;
   consumption: string;
@@ -72,6 +74,7 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
   const [price, setPrice] = useState(String(strain.price));
   const [rating, setRating] = useState(strain.rating);
   const [images, setImages] = useState<string[]>(strain.images ?? []);
+  const [terpenes, setTerpenes] = useState<string[]>(strain.terpenes ?? []);
   const [cbdPercent, setCbdPercent] = useState(
     strain.cbd_percent === null || strain.cbd_percent === undefined ? '' : String(strain.cbd_percent)
   );
@@ -95,6 +98,7 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
           price: parseFloat(price) || 0,
           rating,
           images,
+          terpenes,
           cbd_percent: cbdPercent === '' ? null : parseFloat(cbdPercent),
           makes_high: makesHigh,
           consumption,
@@ -144,6 +148,10 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
         <div>
           <label className="block text-sm text-muted mb-1">Photos (up to 3)</label>
           <ImageInput images={images} onChange={setImages} max={3} />
+        </div>
+        <div>
+          <label className="block text-sm text-muted mb-1">Top 3 Terpenes</label>
+          <TerpeneInput terpenes={terpenes} onChange={setTerpenes} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <input type="number" step="0.1" min="0" max="100" value={cbdPercent} onChange={(e) => setCbdPercent(e.target.value)} placeholder="CBD %" className="rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none" />
@@ -203,6 +211,15 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
         </div>
         {strain.effects && (
           <p className="text-sm text-muted">{strain.effects}</p>
+        )}
+        {strain.terpenes && strain.terpenes.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {strain.terpenes.map((t, i) => (
+              <span key={i} className="inline-block text-xs px-2 py-0.5 rounded-full border bg-earth-orange/10 text-earth-orange border-earth-orange/30">
+                {t}
+              </span>
+            ))}
+          </div>
         )}
         <div className="flex flex-wrap gap-2">
           <span className="inline-block text-xs px-2 py-0.5 rounded-full border bg-surface2 text-fg border-line">

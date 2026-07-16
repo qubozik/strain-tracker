@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import ImageInput from './ImageInput';
+import TerpeneInput from './TerpeneInput';
 
 interface AddFormProps {
   onAdded: () => void;
@@ -18,6 +19,7 @@ export default function AddForm({ onAdded }: AddFormProps) {
   const [rating, setRating] = useState(0);
   const [imageUrl, setImageUrl] = useState('');
   const [images, setImages] = useState<string[]>([]);
+  const [terpenes, setTerpenes] = useState<string[]>([]);
   const [cbdPercent, setCbdPercent] = useState('');
   const [makesHigh, setMakesHigh] = useState(true);
   const [consumption, setConsumption] = useState('Flower');
@@ -41,6 +43,7 @@ export default function AddForm({ onAdded }: AddFormProps) {
           rating,
           image_url: imageUrl || undefined,
           images,
+          terpenes,
           cbd_percent: cbdPercent === '' ? null : parseFloat(cbdPercent),
           makes_high: makesHigh,
           consumption,
@@ -57,6 +60,7 @@ export default function AddForm({ onAdded }: AddFormProps) {
       setRating(0);
       setImageUrl('');
       setImages([]);
+      setTerpenes([]);
       setCbdPercent('');
       setMakesHigh(true);
       setConsumption('Flower');
@@ -148,6 +152,11 @@ export default function AddForm({ onAdded }: AddFormProps) {
       <div>
         <label className="block text-sm text-muted mb-1">Photos (up to 3)</label>
         <ImageInput images={images} onChange={setImages} max={3} />
+      </div>
+
+      <div>
+        <label className="block text-sm text-muted mb-1">Top 3 Terpenes</label>
+        <TerpeneInput terpenes={terpenes} onChange={setTerpenes} />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

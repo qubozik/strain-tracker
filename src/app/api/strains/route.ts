@@ -28,6 +28,7 @@ export async function POST(req: Request) {
       rating: Math.min(5, Math.max(0, parseInt(body.rating) || 0)),
       image_url: body.image_url,
       images: Array.isArray(body.images) ? await persistImages(body.images) : undefined,
+      terpenes: Array.isArray(body.terpenes) ? body.terpenes : undefined,
       cbd_percent:
         body.cbd_percent === null || body.cbd_percent === undefined || body.cbd_percent === ''
           ? null
@@ -57,6 +58,7 @@ export async function PUT(req: Request) {
       rating: Math.min(5, Math.max(0, parseInt(body.rating) || 0)),
       image_url: body.image_url,
       images: Array.isArray(body.images) ? await persistImages(body.images) : undefined,
+      terpenes: Array.isArray(body.terpenes) ? body.terpenes : undefined,
       cbd_percent:
         body.cbd_percent === null || body.cbd_percent === undefined || body.cbd_percent === ''
           ? null

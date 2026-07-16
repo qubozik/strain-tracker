@@ -34,6 +34,7 @@ export default function StrainTable({ strains, onEdit, onDelete }: StrainTablePr
             <th className="px-3 py-2 font-medium">Type</th>
             <th className="px-3 py-2 font-medium">Vendor</th>
             <th className="px-3 py-2 font-medium">Consumption</th>
+            <th className="px-3 py-2 font-medium">Terpenes</th>
             <th className="px-3 py-2 font-medium">Effects</th>
             <th className="px-3 py-2 font-medium text-right">Price</th>
             <th className="px-3 py-2 font-medium text-right">CBD %</th>
@@ -59,6 +60,7 @@ export default function StrainTable({ strains, onEdit, onDelete }: StrainTablePr
               <td className="px-3 py-2 text-fg">{s.type}</td>
               <td className="px-3 py-2 text-muted">{s.vendor || '—'}</td>
               <td className="px-3 py-2 text-muted">{s.consumption ?? 'Flower'}</td>
+              <td className="px-3 py-2 text-muted">{s.terpenes && s.terpenes.length > 0 ? s.terpenes.join(', ') : '—'}</td>
               <td className="px-3 py-2 text-muted max-w-48 truncate">{s.effects || '—'}</td>
               <td className="px-3 py-2 text-right text-fg">${Number(s.price).toFixed(2)}</td>
               <td className="px-3 py-2 text-right text-fg">
