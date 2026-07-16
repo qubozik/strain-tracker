@@ -1,6 +1,7 @@
 import { getStrains, getStats } from '@/lib/db';
 import App from '@/components/App';
 import ThemeToggle from '@/components/ThemeToggle';
+import LogoutButton from '@/components/LogoutButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,7 +33,10 @@ export default async function Home() {
           </h1>
           <p className="text-muted mt-1">Track your strains, effects, prices, and ratings.</p>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          {process.env.APP_PASSWORD ? <LogoutButton /> : null}
+          <ThemeToggle />
+        </div>
       </header>
 
       {dbError && (
