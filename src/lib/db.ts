@@ -30,6 +30,7 @@ export interface Strain {
   makes_high: boolean;
   consumption: string;
   vendor: string;
+  notes: string;
   created_at: string;
 }
 
@@ -57,6 +58,7 @@ export async function ensureSchema() {
   await sql`ALTER TABLE strains ADD COLUMN IF NOT EXISTS vendor TEXT NOT NULL DEFAULT ''`;
   await sql`ALTER TABLE strains ADD COLUMN IF NOT EXISTS images JSONB NOT NULL DEFAULT '[]'::jsonb`;
   await sql`ALTER TABLE strains ADD COLUMN IF NOT EXISTS terpenes JSONB NOT NULL DEFAULT '[]'::jsonb`;
+  await sql`ALTER TABLE strains ADD COLUMN IF NOT EXISTS notes TEXT NOT NULL DEFAULT ''`;
 }
 
 // Normalize a DB row: prefer the images array, fall back to legacy image_url.
@@ -82,7 +84,7 @@ function mapRow(r: Record<string, unknown>): Strain {
 export async function getStrains(): Promise<Strain[]> {
   await ensureSchema();
   const rows = await sql`
-    SELECT id, name, type, effects, price, rating, image_url, images, terpenes, cbd_percent, makes_high, consumption, vendor, created_at
+    SELECT id, name, type, effects, price, rating, image_url, images, terpenes, cbd_percent, makes_high, consumption, vendor, notes, created_at
     FROM strains
     ORDER BY created_at DESC
   `;
@@ -102,15 +104,16 @@ export async function createStrain(data: {
   makes_high?: boolean;
   consumption?: string;
   vendor?: string;
+  notes?: string;
 }): Promise<Strain> {
   await ensureSchema();
   const images = (data.images ?? []).filter(Boolean).slice(0, 3);
   const terpenes = (data.terpenes ?? []).map((t) => t.trim()).filter(Boolean).slice(0, 3);
   const primary = images[0] ?? data.image_url ?? null;
   const rows = await sql`
-    INSERT INTO strains (name, type, effects, price, rating, image_url, images, terpenes, cbd_percent, makes_high, consumption, vendor)
-    VALUES (${data.name}, ${data.type}, ${data.effects}, ${data.price}, ${data.rating}, ${primary}, ${JSON.stringify(images)}::jsonb, ${JSON.stringify(terpenes)}::jsonb, ${data.cbd_percent ?? null}, ${data.makes_high ?? true}, ${data.consumption ?? 'Flower'}, ${data.vendor ?? ''})
-    RETURNING id, name, type, effects, price, rating, image_url, images, terpenes, cbd_percent, makes_high, consumption, vendor, created_at
+    INSERT INTO strains (name, type, effects, price, rating, image_url, images, terpenes, cbd_percent, makes_high, consumption, vendor, notes)
+    VALUES (${data.name}, ${data.type}, ${data.effects}, ${data.price}, ${data.rating}, ${primary}, ${JSON.stringify(images)}::jsonb, ${JSON.stringify(terpenes)}::jsonb, ${data.cbd_percent ?? null}, ${data.makes_high ?? true}, ${data.consumption ?? 'Flower'}, ${data.vendor ?? ''}, ${data.notes ?? ''})
+    RETURNING id, name, type, effects, price, rating, image_url, images, terpenes, cbd_percent, makes_high, consumption, vendor, notes, created_at
   `;
   return mapRow((rows as Record<string, unknown>[])[0]);
 }
@@ -130,6 +133,7 @@ export async function updateStrain(
     makes_high?: boolean;
     consumption?: string;
     vendor?: string;
+    notes?: string;
   }
 ): Promise<Strain | null> {
   const images = (data.images ?? []).filter(Boolean).slice(0, 3);
@@ -148,9 +152,10 @@ export async function updateStrain(
       cbd_percent = ${data.cbd_percent ?? null},
       makes_high = ${data.makes_high ?? true},
       consumption = ${data.consumption ?? 'Flower'},
-      vendor = ${data.vendor ?? ''}
+      vendor = ${data.vendor ?? ''},
+      notes = ${data.notes ?? ''}
     WHERE id = ${id}
-    RETURNING id, name, type, effects, price, rating, image_url, images, terpenes, cbd_percent, makes_high, consumption, vendor, created_at
+    RETURNING id, name, type, effects, price, rating, image_url, images, terpenes, cbd_percent, makes_high, consumption, vendor, notes, created_at
   `;
   const row = (rows as Record<string, unknown>[])[0];
   return row ? mapRow(row) : null;

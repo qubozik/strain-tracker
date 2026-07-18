@@ -25,6 +25,7 @@ export default function AddForm({ onAdded }: AddFormProps) {
   const [makesHigh, setMakesHigh] = useState(true);
   const [consumption, setConsumption] = useState('Flower');
   const [vendor, setVendor] = useState('');
+  const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -49,6 +50,7 @@ export default function AddForm({ onAdded }: AddFormProps) {
           makes_high: makesHigh,
           consumption,
           vendor,
+          notes,
         }),
       });
       if (!res.ok) {
@@ -66,6 +68,7 @@ export default function AddForm({ onAdded }: AddFormProps) {
       setMakesHigh(true);
       setConsumption('Flower');
       setVendor('');
+      setNotes('');
       onAdded();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -205,6 +208,17 @@ export default function AddForm({ onAdded }: AddFormProps) {
             </button>
           ))}
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm text-muted mb-1">Notes (optional)</label>
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          rows={3}
+          className="w-full rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none resize-y"
+          placeholder="Any personal notes about this strain..."
+        />
       </div>
 
       {error && <p className="text-earth-red text-sm">{error}</p>}

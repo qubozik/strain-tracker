@@ -20,6 +20,7 @@ interface Strain {
   makes_high: boolean;
   consumption: string;
   vendor: string;
+  notes: string;
   created_at: string;
 }
 
@@ -82,6 +83,9 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
   const [makesHigh, setMakesHigh] = useState(strain.makes_high);
   const [consumption, setConsumption] = useState(strain.consumption ?? 'Flower');
   const [vendor, setVendor] = useState(strain.vendor ?? '');
+  const [notes, setNotes] = useState(strain.notes ?? '');
+  const [showNotes, setShowNotes] = useState(false);
+  const [savingNotes, setSavingNotes] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   async function handleSave() {
@@ -104,6 +108,7 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
           makes_high: makesHigh,
           consumption,
           vendor,
+          notes,
         }),
       });
       if (!res.ok) throw new Error('Failed to update');
@@ -114,6 +119,37 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function saveNotes() {
+    setSavingNotes(true);
+    try {
+      const res = await fetch(`/api/strains`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: strain.id,
+          name: strain.name,
+          type: strain.type,
+          effects: strain.effects,
+          price: strain.price,
+          rating: strain.rating,
+          images: strain.images,
+          terpenes: strain.terpenes,
+          cbd_percent: strain.cbd_percent,
+          makes_high: strain.makes_high,
+          consumption: strain.consumption,
+          vendor: strain.vendor,
+          notes,
+        }),
+      });
+      if (res.ok) {
+        setShowNotes(false);
+        onUpdated();
+      }
+    } finally {
+      setSavingNotes(false);
     }
   }
 
@@ -250,9 +286,17 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
             {new Date(strain.created_at).toLocaleDateString()}
           </span>
         </div>
+        {strain.notes && (
+          <p className="text-sm text-muted italic whitespace-pre-wrap border-l-2 border-line pl-3">
+            {strain.notes}
+          </p>
+        )}
         <div className="flex gap-2">
           <button onClick={() => setEditing(true)} className="text-xs px-3 py-1 rounded-lg bg-surface2 hover:bg-surface border border-line">Edit</button>
           <button onClick={handleDelete} className="text-xs px-3 py-1 rounded-lg bg-earth-red/15 text-earth-red hover:bg-earth-red/25 border border-earth-red/40">Delete</button>
+          <button onClick={() => { setNotes(strain.notes ?? ''); setShowNotes(true); }} className="text-xs px-3 py-1 rounded-lg bg-surface2 hover:bg-surface border border-line">
+            {strain.notes ? 'Notes •' : 'Notes'}
+          </button>
         </div>
       </div>
       {lightboxIndex !== null && (
@@ -261,6 +305,42 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
           index={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
         />
+      )}
+      {showNotes && (
+        <div
+          className="fixed inset-0 z-[70] flex items-start justify-center bg-black/70 p-4 overflow-y-auto"
+          onClick={() => setShowNotes(false)}
+        >
+          <div
+            className="w-full max-w-lg mt-16 rounded-xl border border-line bg-surface p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold">Notes — {strain.name}</h3>
+              <button
+                onClick={() => setShowNotes(false)}
+                aria-label="Close"
+                className="h-8 w-8 rounded-lg border border-line bg-surface2 hover:bg-surface text-lg leading-none"
+              >
+                ×
+              </button>
+            </div>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={6}
+              autoFocus
+              className="w-full rounded-lg bg-surface2 border border-line px-3 py-2 focus:border-brand focus:outline-none resize-y"
+              placeholder="Add your notes about this strain..."
+            />
+            <div className="flex gap-2 mt-3">
+              <button onClick={saveNotes} disabled={savingNotes} className="px-4 py-1.5 rounded-lg bg-brand hover:bg-brand-hover text-brand-fg disabled:opacity-50 text-sm">
+                {savingNotes ? 'Saving...' : 'Save Notes'}
+              </button>
+              <button onClick={() => setShowNotes(false)} className="px-4 py-1.5 rounded-lg bg-surface2 hover:bg-surface border border-line text-sm">Cancel</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -36,6 +36,7 @@ export async function POST(req: Request) {
       makes_high: body.makes_high !== false,
       consumption: body.consumption ?? 'Flower',
       vendor: body.vendor ?? '',
+      notes: typeof body.notes === 'string' ? body.notes : '',
     });
     return NextResponse.json(strain, { status: 201 });
   } catch (err) {
@@ -66,6 +67,7 @@ export async function PUT(req: Request) {
       makes_high: body.makes_high !== false,
       consumption: body.consumption ?? 'Flower',
       vendor: body.vendor ?? '',
+      notes: typeof body.notes === 'string' ? body.notes : '',
     });
     if (!strain) {
       return NextResponse.json({ error: 'Strain not found' }, { status: 404 });
