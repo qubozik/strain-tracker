@@ -18,6 +18,7 @@
   --brand-fg: #f6efdd;
   --earth-orange: #c56a29;
   --earth-red: #a83b2b;
+  --earth-blue: #3f6f92;
   --star: #d98a2b;
 }
 
@@ -33,6 +34,7 @@
   --brand-fg: #241d14;
   --earth-orange: #d98544;
   --earth-red: #c85a45;
+  --earth-blue: #7ba7c9;
   --star: #e0a13c;
 }
 
@@ -48,6 +50,7 @@
   --color-brand-fg: var(--brand-fg);
   --color-earth-orange: var(--earth-orange);
   --color-earth-red: var(--earth-red);
+  --color-earth-blue: var(--earth-blue);
   --color-star: var(--star);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

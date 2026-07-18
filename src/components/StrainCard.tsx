@@ -52,7 +52,7 @@ function typeColor(type: string): string {
       return 'bg-earth-orange/15 text-earth-orange border-earth-orange/40';
     case 'Indica':
     case 'Indica-dominant':
-      return 'bg-earth-red/15 text-earth-red border-earth-red/40';
+      return 'bg-earth-blue/15 text-earth-blue border-earth-blue/40';
     case 'Hybrid':
       return 'bg-brand/15 text-brand border-brand/40';
     case 'CBD':
