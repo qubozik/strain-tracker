@@ -6,6 +6,7 @@ import AddForm from './AddForm';
 import StrainList from './StrainList';
 import Dashboard from './Dashboard';
 import ExportButtons from './ExportButtons';
+import TerpeneGuide from './TerpeneGuide';
 
 interface AppProps {
   initialStrains: Strain[];
@@ -33,6 +34,7 @@ export default function App({ initialStrains, initialStats }: AppProps) {
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-lg font-semibold">Your Strains ({strains.length})</h2>
         <div className="flex items-center gap-2">
+          <TerpeneGuide />
           <ExportButtons />
           <button
             onClick={() => setShowAdd(true)}

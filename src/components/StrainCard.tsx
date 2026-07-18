@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import ImageInput from './ImageInput';
 import TerpeneInput from './TerpeneInput';
+import TerpeneGuide from './TerpeneGuide';
 import Lightbox from './Lightbox';
 
 interface Strain {
@@ -150,7 +151,10 @@ export default function StrainCard({ strain, onUpdated, onDeleted, initialEditin
           <ImageInput images={images} onChange={setImages} max={3} />
         </div>
         <div>
-          <label className="block text-sm text-muted mb-1">Top 3 Terpenes</label>
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-sm text-muted">Top 3 Terpenes</label>
+            <TerpeneGuide className="text-xs text-brand hover:underline">Terpene guide →</TerpeneGuide>
+          </div>
           <TerpeneInput terpenes={terpenes} onChange={setTerpenes} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
