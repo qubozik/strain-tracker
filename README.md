@@ -97,6 +97,59 @@ vercel --prod
 - Middleware-based password gate
 - Deployed on **Vercel**
 
+## Architecture
+
+```mermaid
+flowchart TD
+    U([User Browser])
+
+    U -->|HTTPS request| MW{"Edge Middleware<br/>APP_PASSWORD set?"}
+    MW -->|No password configured| APP
+    MW -->|Valid auth cookie| APP
+    MW -->|Missing / invalid cookie| LOGIN["/login page"]
+    LOGIN -->|POST /api/login| AUTH["/api/login<br/>verify password<br/>set session cookie"]
+    AUTH -->|Set-Cookie| U
+
+    subgraph VERCEL["Vercel — Next.js 16 App Router"]
+        APP["Pages &amp; Components<br/>(Server + Client)"]
+        API["API Routes<br/>/api/strains /api/stats<br/>/api/export /api/logout"]
+        SHARP["sharp<br/>download + resize images"]
+        APP --> API
+        API --> SHARP
+    end
+
+    APP -->|read strains on load| DB[("Neon Postgres<br/>strains table")]
+    API -->|SQL over HTTPS| DB
+    SHARP -->|fetch remote image| EXT(["External image URLs"])
+```
+
+### Request flow — adding a strain with photos
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant M as Edge Middleware
+    participant A as API /api/strains
+    participant S as sharp
+    participant N as Neon Postgres
+
+    B->>M: POST /api/strains (fields + images)
+    M->>M: Check auth cookie
+    M->>A: Forward (authorized)
+    A->>S: persistImages(urls + uploads)
+    S->>S: Download URL images, resize to JPEG
+    S-->>A: embedded data URLs
+    A->>N: ensureSchema() + INSERT strain
+    N-->>A: saved row
+    A-->>B: 201 Created
+    B->>B: Refresh list and close modal
+```
+
+- **Edge Middleware** gates every route against `APP_PASSWORD` (skipped entirely if the var is unset).
+- **Server Components** load strains directly from Neon on page render; **Client Components** call the API routes for create/update/delete and live refreshes.
+- **API Routes** run on Node, talk to Neon over HTTPS, and use **sharp** to download + resize any URL images so photos are stored permanently in the database.
+- The **schema self-migrates** on each request via `ensureSchema()`.
+
 ## Data model
 
 Strains are stored in a single `strains` table. Key columns:
