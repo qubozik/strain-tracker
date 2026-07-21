@@ -33,6 +33,12 @@ A personal cannabis strain tracking app built with Next.js (App Router), Tailwin
 
 ## Setup
 
+### Prerequisites
+
+- **Node.js 20.9+** (Next.js 16 requires Node >= 20.9)
+- **npm** (bundled with Node)
+- A free **Neon Postgres** database
+
 ### 1. Create a Neon database
 
 Sign up at [neon.tech](https://neon.tech) (free tier) and create a new project. Copy the connection string — it looks like:
@@ -67,6 +73,15 @@ npm run dev
 The schema auto-creates and self-migrates on first DB access — no manual migrations needed. New
 columns (photos, terpenes, notes, etc.) are added automatically via `ALTER TABLE ... ADD COLUMN
 IF NOT EXISTS`, so existing data is never lost.
+
+### npm scripts
+
+| Script | Description |
+| --- | --- |
+| `npm run dev` | Start the local dev server at http://localhost:3000 |
+| `npm run build` | Create a production build |
+| `npm start` | Run the production build (after `npm run build`) |
+| `npm run lint` | Run ESLint |
 
 ## Deploy to Vercel
 
@@ -172,3 +187,52 @@ Photos (both uploads and downloaded URL images) are stored directly in the datab
 JPEG data. This keeps deployment zero-config (no separate blob store or tokens required). For
 personal use with a handful of photos per strain this is fine. If you ever need full-resolution
 originals or large galleries, the storage layer can be swapped for **Vercel Blob**.
+
+## API reference
+
+All routes live under `src/app/api`. Every route is protected by the middleware password gate
+except `/api/login` and `/api/logout`.
+
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/strains` | List all strains |
+| `POST` | `/api/strains` | Create a strain (downloads/resizes any image URLs) |
+| `PUT` | `/api/strains` | Update a strain by `id` |
+| `DELETE` | `/api/strains` | Delete a strain by `id` |
+| `GET` | `/api/stats` | Dashboard aggregates (totals, averages, top-rated) |
+| `GET` | `/api/export?format=json\|csv` | Download all strains |
+| `POST` | `/api/login` | Verify `APP_PASSWORD`, set session cookie |
+| `POST` | `/api/logout` | Clear the session cookie |
+
+## Project structure
+
+```
+src/
+├── middleware.ts            # Password gate for all routes
+├── app/
+│   ├── layout.tsx           # Root layout + no-flash theme init
+│   ├── page.tsx             # Home (server component; loads strains)
+│   ├── login/page.tsx       # Login screen
+│   ├── globals.css          # Earthy light/dark theme tokens
+│   ├── icon.svg             # Leaf favicon
+│   └── api/                 # strains, stats, export, login, logout
+├── components/
+│   ├── App.tsx              # Client orchestrator + add-strain modal
+│   ├── AddForm.tsx          # New-strain form
+│   ├── StrainList.tsx       # Search, filter, grid/table toggle
+│   ├── StrainCard.tsx       # Grid card + edit/notes/lightbox
+│   ├── StrainTable.tsx      # Table view
+│   ├── Dashboard.tsx        # Stat cards
+│   ├── ImageInput.tsx       # Up-to-3 photo picker (URL or upload)
+│   ├── Lightbox.tsx         # Full-screen photo viewer
+│   ├── TerpeneInput.tsx     # Top-3 terpene picker w/ autocomplete
+│   ├── TerpeneGuide.tsx     # Terpene reference modal
+│   ├── ThemeToggle.tsx      # Light/dark switch
+│   ├── LogoutButton.tsx     # Lock button
+│   └── ExportButtons.tsx    # JSON/CSV download
+└── lib/
+    ├── db.ts                # Neon client, schema, CRUD, stats
+    ├── images.ts            # Server-side image download + resize (sharp)
+    ├── terpenes.ts          # Terpene reference data
+    └── auth.ts              # Session token helper
+```
